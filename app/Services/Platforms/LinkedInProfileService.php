@@ -21,7 +21,7 @@ class LinkedInProfileService implements PlatformInterface
     {
         return [
             'X-Restli-Protocol-Version' => '2.0.0',
-            'LinkedIn-Version' => '202304',
+            'LinkedIn-Version' => '202606',
         ];
     }
 
