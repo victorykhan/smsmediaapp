@@ -24,7 +24,7 @@ jobs:
           key: composer-${{ hashFiles('composer.lock') }}
 
       - name: Install PHP deps (no dev)
-        run: composer install --no-dev --optimize-autoloader --no-interaction
+        run: composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=php
 
       - name: Cache npm deps
         uses: actions/cache@v4
