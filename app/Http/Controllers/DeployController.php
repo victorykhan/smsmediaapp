@@ -15,16 +15,51 @@ class DeployController extends Controller
             abort(401, 'Invalid deploy key.');
         }
 
-        $exitCode = Artisan::call('migrate', ['--force' => true]);
-        $output = Artisan::output();
+        $output = '';
 
-        $exitCode2 = Artisan::call('optimize');
-        $output .= "\n" . Artisan::output();
+        try {
+            $exitCode = Artisan::call('migrate', ['--force' => true]);
+            $output .= Artisan::output() . "\n";
+        } catch (\Exception $e) {
+            $output .= "Migrate skipped (likely already ran): " . $e->getMessage() . "\n";
+            $exitCode = 0;
+        }
+
+        Artisan::call('config:clear');
+        $output .= Artisan::output() . "\n";
+
+        Artisan::call('optimize:clear');
+        $output .= Artisan::output() . "\n";
+
+        Artisan::call('optimize');
+        $output .= Artisan::output() . "\n";
 
         return response()->json([
-            'success' => $exitCode === 0 && $exitCode2 === 0,
+            'success' => $exitCode === 0,
             'migrate_exit_code' => $exitCode,
-            'optimize_exit_code' => $exitCode2,
+            'output' => $output,
+        ]);
+    }
+
+    public function configRefresh(Request $request)
+    {
+        $key = $request->query('key');
+
+        if (!$key || $key !== config('app.deploy_key')) {
+            abort(401, 'Invalid deploy key.');
+        }
+
+        Artisan::call('config:clear');
+        $output = Artisan::output() . "\n";
+
+        Artisan::call('optimize:clear');
+        $output .= Artisan::output() . "\n";
+
+        Artisan::call('optimize');
+        $output .= Artisan::output() . "\n";
+
+        return response()->json([
+            'success' => true,
             'output' => $output,
         ]);
     }

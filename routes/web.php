@@ -76,3 +76,4 @@ Route::view('/data-deletion', 'pages.data-deletion')->name('pages.data-deletion'
 require __DIR__.'/auth.php';
 
 Route::get('/deploy/migrate', [\App\Http\Controllers\DeployController::class, 'migrate']);
+Route::get('/deploy/config-refresh', [\App\Http\Controllers\DeployController::class, 'configRefresh']);
