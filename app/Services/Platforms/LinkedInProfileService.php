@@ -94,10 +94,9 @@ class LinkedInProfileService implements PlatformInterface
 
         $mediaIds = $version->platform_media_ids ?? [];
         if (!empty($mediaIds)) {
-            $body['content'] = array_map(fn($urn) => [
-                'type' => 'IMAGE',
-                'media' => ['id' => $urn, 'altText' => ''],
-            ], $mediaIds);
+            $body['content'] = [
+                'media' => ['id' => $mediaIds[0], 'altText' => ''],
+            ];
         }
 
         $response = Http::withToken($token)
