@@ -61,9 +61,7 @@ jobs:
           deploy
           EOF
           rsync -a --exclude-from=/tmp/exclude.txt ./ deploy/
-          cat > deploy/.env << 'ENVEOF'
-${{ secrets.ENV_PROD }}
-ENVEOF
+          echo '${{ secrets.ENV_PROD }}' > deploy/.env
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
