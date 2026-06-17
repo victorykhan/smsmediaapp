@@ -1,0 +1,51 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Edit') }} {{ $client->name }}</h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 card-hover">
+                <form action="{{ route('clients.update', $client) }}" method="POST" class="p-6 space-y-6">
+                    @csrf @method('PUT')
+
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Client Name</label>
+                        <input type="text" name="name" id="name" value="{{ old('name', $client->name) }}" required
+                            class="mt-1 block w-full rounded-xl border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
+                        <input type="text" name="website" id="website" value="{{ old('website', $client->website) }}"
+                            class="mt-1 block w-full rounded-xl border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2" placeholder="example.com">
+                        <p class="text-xs text-gray-400 mt-1">Full URL (https://...) or just domain name. Optional.</p>
+                    </div>
+
+                    <div>
+                        <label for="industry" class="block text-sm font-medium text-gray-700">Industry</label>
+                        <input type="text" name="industry" id="industry" value="{{ old('industry', $client->industry) }}"
+                            class="mt-1 block w-full rounded-xl border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label for="timezone" class="block text-sm font-medium text-gray-700">Timezone</label>
+                        <select name="timezone" id="timezone" required
+                            class="mt-1 block w-full rounded-xl border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2">
+                            @foreach(timezone_identifiers_list() as $tz)
+                                <option value="{{ $tz }}" {{ (old('timezone', $client->timezone)) === $tz ? 'selected' : '' }}>{{ $tz }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-4 pt-2">
+                        <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl font-semibold text-xs text-white uppercase tracking-widest shadow-lg shadow-indigo-200 hover:shadow-xl hover:scale-[1.02] transition-all btn-scale">
+                            Update Client
+                        </button>
+                        <a href="{{ route('clients.show', $client) }}" class="text-sm text-gray-500 hover:text-gray-700 font-medium transition">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

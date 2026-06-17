@@ -1,0 +1,78 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, gd, xml, curl, pdo_mysql
+          tools: composer:v2
+
+      - name: Cache Composer deps
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Install PHP deps (no dev)
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Cache npm deps
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: npm-${{ hashFiles('package-lock.json') }}
+
+      - name: Build assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Prepare deploy artifact
+        run: |
+          mkdir -p deploy
+          cat > /tmp/exclude.txt << 'EOF'
+          .git
+          .github
+          node_modules
+          tests
+          resources/js
+          resources/css
+          vite.config.js
+          package.json
+          package-lock.json
+          postcss.config.js
+          tailwind.config.js
+          phpunit.xml
+          .env
+          .env.example
+          .gitignore
+          .gitattributes
+          README.md
+          deploy
+          EOF
+          rsync -a --exclude-from=/tmp/exclude.txt ./ deploy/
+          echo "${{ secrets.ENV_PROD }}" > deploy/.env
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./deploy/
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+
+      - name: Trigger migrations
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            "https://sms.vicips.ca/deploy/migrate?key=${{ secrets.DEPLOY_KEY }}"
