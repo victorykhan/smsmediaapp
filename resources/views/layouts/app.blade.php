@@ -46,6 +46,8 @@
         </main>
 
         <x-notification-toast />
+
+        @include('pages._footer')
     </body>
 
     @if(session('success'))

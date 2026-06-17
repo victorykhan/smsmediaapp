@@ -70,6 +70,9 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/oauth/{platform}/callback', [OAuthController::class, 'callback'])->name('oauth.callback');
 
+Route::view('/privacy', 'pages.privacy')->name('pages.privacy');
+Route::view('/data-deletion', 'pages.data-deletion')->name('pages.data-deletion');
+
 require __DIR__.'/auth.php';
 
 Route::get('/deploy/migrate', [\App\Http\Controllers\DeployController::class, 'migrate']);
