@@ -66,8 +66,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/clients/{client}/posts/{post}/pre-upload/status', [PreUploadController::class, 'status'])->name('posts.pre-upload.status');
 
     Route::get('/oauth/{platform}/redirect/{client?}', [OAuthController::class, 'redirect'])->name('oauth.redirect');
-    Route::get('/oauth/{platform}/callback', [OAuthController::class, 'callback'])->name('oauth.callback');
 });
+
+Route::get('/oauth/{platform}/callback', [OAuthController::class, 'callback'])->name('oauth.callback');
 
 require __DIR__.'/auth.php';
 
