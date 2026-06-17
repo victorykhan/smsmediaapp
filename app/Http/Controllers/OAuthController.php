@@ -36,7 +36,9 @@ class OAuthController extends Controller
         session()->put("oauth_state_{$platform}", $state);
 
         $scopes = implode(' ', $provider['scopes']);
-        $url = str_replace('{instance}', $request->input('instance', 'mastodon.social'), $provider['authorize_url']);
+        $instance = $request->input('instance', 'mastodon.social');
+        session()->put("oauth_instance_{$platform}", $instance);
+        $url = str_replace('{instance}', $instance, $provider['authorize_url']);
 
         $params = array_merge($url === $provider['authorize_url'] ? [] : [], [
             'client_id' => $clientId,
@@ -79,7 +81,8 @@ class OAuthController extends Controller
         }
 
         $redirectUri = route('oauth.callback', ['platform' => $platform]);
-        $tokenUrl = str_replace('{instance}', $request->input('instance', 'mastodon.social'), $provider['token_url']);
+        $instance = session()->pull("oauth_instance_{$platform}", $request->input('instance', 'mastodon.social'));
+        $tokenUrl = str_replace('{instance}', $instance, $provider['token_url']);
 
         $response = Http::asForm()->post($tokenUrl, [
             'grant_type' => 'authorization_code',
@@ -102,6 +105,7 @@ class OAuthController extends Controller
                 ? now()->addSeconds($tokenData['expires_in'])->toDateTimeString()
                 : null,
             'scope' => $tokenData['scope'] ?? '',
+            'instance' => $instance,
         ];
 
         $clientId = session('oauth_client');
