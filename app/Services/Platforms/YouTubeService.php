@@ -51,6 +51,7 @@ class YouTubeService implements PlatformInterface
                 'snippet' => [
                     'title' => $title ?: 'Untitled Video',
                     'description' => $description,
+                    'categoryId' => '22',
                 ],
                 'status' => [
                     'privacyStatus' => 'unlisted',
@@ -108,6 +109,7 @@ class YouTubeService implements PlatformInterface
                 'snippet' => [
                     'title' => $title ?: 'Untitled Video',
                     'description' => $version->content ?? '',
+                    'categoryId' => '22',
                 ],
                 'status' => [
                     'privacyStatus' => 'public',
